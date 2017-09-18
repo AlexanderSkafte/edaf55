@@ -30,10 +30,6 @@ public class AlarmClock extends Thread {
 		timeThread = new TimeThread(clock);
 		editThread = new EditThread(input, clock);
 		
-		clock.setAlarmTime(2955);
-		clock.setAlarmTime(30000);
-		clock.setAlarmFlag(true);
-		
 		timeThread.start();
 		editThread.start();
 	}
@@ -43,7 +39,7 @@ public class AlarmClock extends Thread {
 	 */
 	public void terminate() {
 		// Do something more clever here...
-		output.console("AlarmClock exit.");
+		// output.console("AlarmClock exit.");
 	}
 	
 	/**
@@ -54,23 +50,4 @@ public class AlarmClock extends Thread {
 			output.showTime(clock.getClockTime());
 		}
 	}
-	
-//	class InputOutputTest implements Runnable {
-//		public void run() {
-//			long curr; int time, mode; boolean flag;
-//			output.console("Click on GUI to obtain key presses!");
-//			while (!Thread.currentThread().isInterrupted()) {
-//				curr = System.currentTimeMillis();
-//				time = input.getValue();
-//				flag = input.getAlarmFlag();
-//				mode = input.getChoice();
-//				output.doAlarm();
-//				output.console(curr, time, flag, mode);
-//				if (time == 120000) break; // Swe: Bryter f�r middag
-//				signal.take();
-//			}
-//			output.console("IO-test terminated #");
-//		}
-//	}
-
 }

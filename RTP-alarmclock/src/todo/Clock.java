@@ -16,11 +16,6 @@ public class Clock {
 	public Clock(ClockOutput output) {
 		this.output = output;
 		this.sem = new MutexSem();
-//		clockTime = 2955;
-//		alarmTime = 030000;
-//		setClockTime(clockTime);
-//		setAlarmTime(alarmTime);
-//		setAlarmFlag(true);
 	}
 
 	public int getClockTime() {
