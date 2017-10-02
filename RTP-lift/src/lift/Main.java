@@ -10,7 +10,7 @@ public class Main {
 		Monitor monitor = new Monitor(view);
 
 		// Lift thread
-		Lift lift = new Lift(view, monitor);
+		Lift lift = new Lift(monitor);
 
 		// Person threads
 		for (int i = 0; i < 20; i++) {
