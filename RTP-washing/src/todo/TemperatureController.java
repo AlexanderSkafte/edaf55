@@ -6,13 +6,18 @@ import done.AbstractWashingMachine;
 
 
 public class TemperatureController extends PeriodicThread {
-	// TODO: add suitable attributes
+	public final static int TEMP_WHITE_PRE_WASH = 40;
+	public final static int TEMP_WHITE_MAIN_WASH = 90;
+	public final static int TEMP_COLOR_MAIN_WASH = 60;
+	private AbstractWashingMachine mach;
+	
 
 	public TemperatureController(AbstractWashingMachine mach, double speed) {
-		super((long) (1000/speed)); // TODO: replace with suitable period
+		super((long) (60 * 1000 / speed));
+		this.mach = mach;
 	}
 
 	public void perform() {
-		// TODO: implement this method
+		
 	}
 }

@@ -6,13 +6,16 @@ import done.AbstractWashingMachine;
 
 
 public class WaterController extends PeriodicThread {
-	// TODO: add suitable attributes
+	public final static double WATER_LEVEL_EMPTY = 0.0;
+	public final static double WATER_LEVEL_FULL = 0.4;
+	private AbstractWashingMachine mach;
 
 	public WaterController(AbstractWashingMachine mach, double speed) {
-		super((long) (1000/speed)); // TODO: replace with suitable period
+		super((long) (1000 / speed));
+		this.mach = mach;
 	}
 
 	public void perform() {
-		// TODO: implement this method
+		
 	}
 }
