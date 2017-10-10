@@ -36,6 +36,10 @@ public class WashingController implements ButtonListener {
 		}
 	}
 	
+	/* TODO
+	 * Do we need to have a program 0?
+	 */
+	
 	private WashingProgram createProgram(int button) {
 		WashingProgram wp;
 		switch (button) {
