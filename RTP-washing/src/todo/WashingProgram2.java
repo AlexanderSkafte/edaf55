@@ -44,7 +44,19 @@ class WashingProgram2 extends WashingProgram {
 		// Fill the machine
 		myWaterController.putEvent(new WaterEvent(this,
 				WaterEvent.WATER_FILL,
-				20.0));
+				WaterController.WATER_LEVEL_FULL));
+		
+		// Wait for AckEvent
+		mailbox.doFetch();
+		
+		// Stop filling, let it be
+		myWaterController.putEvent(new WaterEvent(this,
+				WaterEvent.WATER_IDLE,
+				WaterController.WATER_LEVEL_EMPTY));
+		
+		// Start spinning
+		mySpinController.putEvent(new SpinEvent(this,
+				SpinEvent.SPIN_SLOW));
 		
 		// ----------------------------------
 		// Pre-wash
@@ -54,16 +66,43 @@ class WashingProgram2 extends WashingProgram {
 				TemperatureEvent.TEMP_SET,
 				TemperatureController.TEMP_WHITE_PRE_WASH));
 
+		// Wait for AckEvent
+		mailbox.doFetch();
+		
 		// Keep temperature for 15 minutes
 		Thread.sleep((long) (15 * 60 * 1000 / mySpeed));
+
+		// Stop heating
+		myTempController.putEvent(new TemperatureEvent(this,
+				TemperatureEvent.TEMP_IDLE,
+				0.0));
+		
+		// Drain
+		myWaterController.putEvent(new WaterEvent(this,
+				WaterEvent.WATER_DRAIN,
+				0.0));
+
+		// Wait for AckEvent
+		mailbox.doFetch();
 		
 		// ----------------------------------
 		// Main wash
+
+		// Fill the machine
+		myWaterController.putEvent(new WaterEvent(this,
+				WaterEvent.WATER_FILL,
+				WaterController.WATER_LEVEL_FULL));
+	
+		// Wait for AckEvent
+		mailbox.doFetch();
 		
 		// Heat to 90 degrees Celsius
 		myTempController.putEvent(new TemperatureEvent(this,
 				TemperatureEvent.TEMP_SET,
 				TemperatureController.TEMP_WHITE_MAIN_WASH));
+		
+		// Wait for AckEvent
+		mailbox.doFetch();
 		
 		// Keep temperature for 30 minutes
 		Thread.sleep((long) (30 * 60 * 1000 / mySpeed));
@@ -76,7 +115,7 @@ class WashingProgram2 extends WashingProgram {
 		// Drain
 		myWaterController.putEvent(new WaterEvent(this,
 				WaterEvent.WATER_DRAIN,
-				0.0));
+				WaterController.WATER_LEVEL_EMPTY));
 		
 		// Wait for AckEvent
 		mailbox.doFetch();
@@ -88,13 +127,14 @@ class WashingProgram2 extends WashingProgram {
 					WaterEvent.WATER_FILL,
 					WaterController.WATER_LEVEL_FULL));
 			
+			mailbox.doFetch();
+			
 			Thread.sleep((long) (2 * 60 * 1000 / mySpeed));
 			
 			myWaterController.putEvent(new WaterEvent(this,
 					WaterEvent.WATER_DRAIN,
 					WaterController.WATER_LEVEL_EMPTY));
 			
-			// Wait for AckEvent
 			mailbox.doFetch();
 		}
 		

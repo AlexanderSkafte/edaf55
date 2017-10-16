@@ -13,16 +13,16 @@ public class WashingController implements ButtonListener {
 	public WashingController(AbstractWashingMachine theMachine, double theSpeed) {
 		mach = theMachine;
 		speed = theSpeed;
-
 		temp = new TemperatureController(mach, speed);
 		water = new WaterController(mach, speed);
 		spin = new SpinController(mach, speed);
+		
 		temp.start();
 		water.start();
 		spin.start();
 		
 		program = new WashingProgram3(mach, speed, temp, water, spin);
-		program.start();
+		program.terminate();
 	}
 
 	public void processButton(int theButton) {
@@ -35,10 +35,6 @@ public class WashingController implements ButtonListener {
 			System.out.println("Error: processButton(" + theButton + ")");
 		}
 	}
-	
-	/* TODO
-	 * Do we need to have a program 0?
-	 */
 	
 	private WashingProgram createProgram(int button) {
 		WashingProgram wp;

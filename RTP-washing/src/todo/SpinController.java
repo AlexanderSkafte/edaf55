@@ -1,9 +1,7 @@
 package todo;
 
-
-import se.lth.cs.realtime.*;
 import done.AbstractWashingMachine;
-
+import se.lth.cs.realtime.PeriodicThread;
 
 public class SpinController extends PeriodicThread {
 	private AbstractWashingMachine mach;
@@ -20,27 +18,31 @@ public class SpinController extends PeriodicThread {
 		SpinEvent e = (SpinEvent) mailbox.tryFetch();
 		if (e != null) {
 			mode = e.getMode();
-			switch (mode) {
-			case SpinEvent.SPIN_OFF:
-				mach.setSpin(AbstractWashingMachine.SPIN_OFF);
-				break;
-			case SpinEvent.SPIN_SLOW:
-				mach.setSpin(AbstractWashingMachine.SPIN_LEFT);
-				break;
-			case SpinEvent.SPIN_FAST:
-				mach.setSpin(AbstractWashingMachine.SPIN_FAST);
-				break;
-			default:
-				System.out.println(
-						"Error: SpinController - mode unrecognized (" + mode + ").");
-				break;
-			}
-		} else {
-			System.out.println("Hmm... WaterEvent (mailbox.tryFetch()) was null.");
 		}
 		
-		mach.setSpin(direction);
+		switch (mode) {
 		
+		case SpinEvent.SPIN_OFF:
+			mach.setSpin(AbstractWashingMachine.SPIN_OFF);
+			break;
+		
+		case SpinEvent.SPIN_SLOW:
+			mach.setSpin(direction);
+			break;
+		
+		case SpinEvent.SPIN_FAST:
+			if (mach.getWaterLevel() == WaterController.WATER_LEVEL_EMPTY) {
+				mach.setSpin(AbstractWashingMachine.SPIN_FAST);
+			} else {
+				mach.setSpin(AbstractWashingMachine.SPIN_OFF);
+			}
+			break;
+		
+		default:
+			System.out.println("Error: SpinController - mode unrecognized (" + mode + ").");
+			break;
+		}
+
 		// Change direction once per period
 		if (direction == AbstractWashingMachine.SPIN_LEFT) {
 			direction = AbstractWashingMachine.SPIN_RIGHT;

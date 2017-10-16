@@ -13,55 +13,47 @@ public class TemperatureController extends PeriodicThread {
 	private int mode = TemperatureEvent.TEMP_IDLE;
 	private double target;
 	private RTThread source;
-	private boolean isHeating;
+	private boolean acked;
 
 	public TemperatureController(AbstractWashingMachine mach, double speed) {
-		super((long) (10 * 1000 / speed));
+		super((long) (1000 / speed));
 		this.mach = mach;
 	}
 
-	/* TODO
-	 * Where do we put the event stuff? (putEvent)
-	 */
-	
 	public void perform() {
 		TemperatureEvent e = (TemperatureEvent) mailbox.tryFetch();
 		if (e != null) {
 			mode   = e.getMode();
 			target = e.getTemperature();
 			source = (RTThread) e.getSource();
-
-			switch (mode) {
-			case TemperatureEvent.TEMP_IDLE:
-				mach.setHeating(false);
-				isHeating = false;
-				break;
-			case TemperatureEvent.TEMP_SET:
-				mach.setHeating(true);
-				isHeating = true;
-				break;
-			default:
-				System.out.println(
-						"Error: TemperatureController - mode unrecognized (" + mode + ").");
-				break;
-			}
-		} else {
-			System.out.println("Hmm... TemperatureEvent (mailbox.tryFetch()) was null.");
+			acked  = (mode != TemperatureEvent.TEMP_SET);
 		}
+
+		switch (mode) {
 		
-		/* Don't forget this requirement:
-		 - The machine must not be heated while it is free of water
-		 */
-		
-		if (mode == TemperatureEvent.TEMP_SET) {
+		case TemperatureEvent.TEMP_IDLE:
+			mach.setHeating(false);
+			break;
+			
+		case TemperatureEvent.TEMP_SET:
 			double temp = mach.getTemperature();
-			if (isHeating && temp >= target - 0.4) {
+			if (temp >= target - 0.2) {
 				mach.setHeating(false);
-				isHeating = false;
-			} else if (!isHeating && temp <= target - 1.6) {
+				if (!acked) {
+					source.putEvent(new AckEvent(this));
+					acked = true;
+					System.out.println("TemperatureController: Sent ack.");
+				}
+			} else if (temp <= target - 1.8
+					&& mach.getWaterLevel() > WaterController.WATER_LEVEL_EMPTY) {
 				mach.setHeating(true);
-				isHeating = true;
 			}
+			break;
+			
+		default:
+			System.out.println(
+					"Error: TemperatureController - mode unrecognized (" + mode + ").");
+			break;
 		}
 	}
 }
