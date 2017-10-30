@@ -16,7 +16,7 @@ public class TemperatureController extends PeriodicThread {
 	private boolean acked;
 
 	public TemperatureController(AbstractWashingMachine mach, double speed) {
-		super((long) (1000 / speed));
+		super((long) (5 * 1000 / speed));
 		this.mach = mach;
 	}
 
@@ -37,14 +37,14 @@ public class TemperatureController extends PeriodicThread {
 			
 		case TemperatureEvent.TEMP_SET:
 			double temp = mach.getTemperature();
-			if (temp >= target - 0.2) {
+			if (temp >= target - 0.3) {
 				mach.setHeating(false);
 				if (!acked) {
 					source.putEvent(new AckEvent(this));
 					acked = true;
 					System.out.println("TemperatureController: Sent ack.");
 				}
-			} else if (temp <= target - 1.8
+			} else if (temp <= target - 1.5
 					&& mach.getWaterLevel() > WaterController.WATER_LEVEL_EMPTY) {
 				mach.setHeating(true);
 			}
